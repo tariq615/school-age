@@ -14,10 +14,10 @@ import { CalculationResult } from '@/types';
 export default function Home() {
   const [country, setCountry] = useState("us");
   const [province, setProvince] = useState("");
-  const [birthDate, setBirthDate] = useState({ day: '', month: '', year: '' });
+  const [birthDate, setBirthDate] = useState({ day: '1', month: '1', year: '' });
   const [results, setResults] = useState<CalculationResult[]>([]);
   const [currentAge, setCurrentAge] = useState<number | null>(null);
-  
+
   const calculatorRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   const howItWorksRef = useRef<HTMLDivElement>(null);
@@ -40,22 +40,22 @@ export default function Home() {
   const calculateSchoolInfo = useCallback(() => {
     const { day, month, year } = birthDate;
     if (!day || !month || !year) return;
-    
+
     const birthDateStr = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
     const birthDateObj = new Date(birthDateStr);
-    
+
     if (isNaN(birthDateObj.getTime())) return;
-    
+
     if (!selectedCountryData) return;
-    
+
     const age = getCurrentAge(birthDateObj);
     setCurrentAge(age);
-    
+
     const selectedProvince = selectedCountryData.provinces.find(p => p.id === province) || selectedCountryData;
     const calculatedResults = calculateSchoolYears(birthDateObj, selectedCountryData, selectedProvince);
-    
+
     setResults(calculatedResults);
-    
+
     // Scroll to results
     setTimeout(() => {
       if (resultsRef.current) {
@@ -65,25 +65,25 @@ export default function Home() {
   }, [birthDate, province, selectedCountryData]);
 
   useEffect(() => {
-  const { day, month, year } = birthDate;
-  if (day && month && year && province && country) {
-    calculateSchoolInfo();
-  }
-}, [birthDate, province, country, calculateSchoolInfo]);
+    const { day, month, year } = birthDate;
+    if (day && month && year && province && country) {
+      calculateSchoolInfo();
+    }
+  }, [birthDate, province, country, calculateSchoolInfo]);
 
 
 
   const scrollToSection = (section: string) => {
     let ref = calculatorRef;
-    
-    switch(section) {
+
+    switch (section) {
       case 'results': ref = resultsRef; break;
       case 'how-it-works': ref = howItWorksRef; break;
       case 'education': ref = educationRef; break;
       case 'faq': ref = faqRef; break;
       default: ref = calculatorRef;
     }
-    
+
     if (ref.current) {
       ref.current.scrollIntoView({ behavior: 'smooth' });
     }
@@ -98,18 +98,18 @@ export default function Home() {
           <div className="absolute left-1/2 top-1/4 w-72 h-72 bg-purple-200 rounded-full filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
           <div className="absolute left-1/3 top-2/3 w-72 h-72 bg-indigo-200 rounded-full filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
         </div>
-        
+
         <div className="container mx-auto px-4 relative z-10">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             className="text-center mb-12"
           >
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+            <h1 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 max-w-2xl mx-auto leading-tight">
               School Age Calculator
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-lg md:text-xl text-gray-600 max-w-xl mx-auto">
               Discover when your child can start school based on your location and their birth date
             </p>
           </motion.div>
@@ -117,7 +117,7 @@ export default function Home() {
           <div ref={calculatorRef} className="max-w-4xl mx-auto">
             <CalculatorForm
               country={country}
-              setCountry={setCountry} 
+              setCountry={setCountry}
               province={province}
               setProvince={setProvince}
               birthDate={birthDate}
@@ -132,7 +132,7 @@ export default function Home() {
       {results.length > 0 && selectedCountryData && (
         <section ref={resultsRef} className="py-16 bg-white">
           <div className="container mx-auto px-4">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
@@ -140,10 +140,10 @@ export default function Home() {
               className="max-w-4xl mx-auto"
             >
               <h2 className="text-3xl font-bold text-center mb-8 text-gray-900">School Entry Timeline</h2>
-              <ResultsTable 
-                results={results} 
-                country={selectedCountryData} 
-                province={province} 
+              <ResultsTable
+                results={results}
+                country={selectedCountryData}
+                province={province}
               />
             </motion.div>
           </div>
